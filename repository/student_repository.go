@@ -27,3 +27,40 @@ func (r StudentRepository) Create(m model.Student) error {
 
 	return nil
 }
+
+func (r StudentRepository) Read() ([]model.Student, error) {
+	var listAll []model.Student
+	query := `SELECT nim, name, email, major FROM student`
+
+	rows, err := r.DB.Query(query)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() { // membaca baris satu per satu
+		var (
+			nim   int64
+			name  string
+			email string
+			major string
+		)
+
+		if err := rows.Scan(&nim, &name, &email, &major); err != nil { // memindahkan data ke var
+			return nil, err
+		}
+
+		//convert int64 -> uint
+		student := model.Student{
+			NIM:   uint(nim),
+			Name:  name,
+			Email: email,
+			Major: major,
+		}
+
+		listAll = append(listAll, student)
+	}
+
+	return listAll, nil
+}

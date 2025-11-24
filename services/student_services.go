@@ -51,3 +51,7 @@ func (s StudentService) Create(req dto.CreateStudentRequest) error {
 	}
 	return nil
 }
+
+func (s StudentService) Read() ([]model.Student, error) {
+	return s.Repo.Read() // melakukan query
+}
