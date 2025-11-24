@@ -1,0 +1,13 @@
+# Bin dan build
+/bin
+/dist
+*.exe
+*.dll
+*.so
+
+# Go
+/vendor/
+*.test
+
+# env
+.env
