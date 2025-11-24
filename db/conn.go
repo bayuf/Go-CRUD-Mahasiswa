@@ -24,7 +24,8 @@ func Connect() {
 	}
 
 	//membuka koneksi dengan driver pgx
-	DB, err := sql.Open("pgx", dbURL)
+	var err error
+	DB, err = sql.Open("pgx", dbURL)
 	if err != nil {
 		panic("tidak dapat terkoneksi dengan database" + err.Error())
 	}
