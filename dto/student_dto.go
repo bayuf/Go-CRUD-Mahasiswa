@@ -1,7 +1,6 @@
-package model
+package dto
 
-type Student struct {
-	ID    uint
+type CreateStudentRequest struct {
 	Name  string
 	NIM   uint
 	Email string
