@@ -7,11 +7,16 @@ import (
 	"github.com/bayuf/Go-CRUD-Mahasiswa/model"
 )
 
+type IStudentRepository interface {
+	Create(m model.Student) error
+	Read() ([]model.Student, error)
+}
+
 type StudentRepository struct {
 	DB *sql.DB
 }
 
-func NewStudentRepository() StudentRepository {
+func NewStudentRepository() IStudentRepository {
 	return StudentRepository{DB: db.DB}
 }
 

@@ -10,10 +10,10 @@ import (
 )
 
 type StudentService struct {
-	Repo repository.StudentRepository
+	Repo repository.IStudentRepository
 }
 
-func NewStudentService(repo repository.StudentRepository) StudentService {
+func NewStudentService(repo repository.IStudentRepository) StudentService {
 	return StudentService{
 		Repo: repo,
 	}
