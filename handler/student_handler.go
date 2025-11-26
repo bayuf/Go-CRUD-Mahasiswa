@@ -23,10 +23,11 @@ func NewStudentHandler(service services.StudentService) StudentHandler {
 
 func (h StudentHandler) Create(req dto.CreateStudentRequest) {
 	reader := bufio.NewReader(os.Stdin)
-
+	reader.ReadString('\n')
 	// input Name
 	fmt.Println("Masukkan data diri")
 	fmt.Print("Name: ")
+
 	name, _ := reader.ReadString('\n') //membaca satu baris input
 	name = strings.TrimSpace(name)
 
@@ -82,11 +83,61 @@ func (h StudentHandler) Read() {
 
 }
 
-// func (h StudentHandler) Create(req dto.CreateStudentRequest) {
-// 	if err := h.service.Create(req); err != nil {
-// 		fmt.Println("error:", err)
-// 		return
-// 	}
+func (h StudentHandler) Update() (dto.UpdateStudentRequest, error) {
 
-// 	fmt.Println("Student added")
-// }
+	reader := bufio.NewReader(os.Stdin)
+	reader.ReadString('\n') // buang \n di awal
+	// input NIM
+	fmt.Println("Masukkan NIM Kamu:")
+	fmt.Print("NIM: ")
+	nimStr, _ := reader.ReadString('\n')
+	nimStr = strings.TrimSpace(nimStr)
+	// convert ke uint
+	nimUint, err := strconv.ParseUint(nimStr, 10, 64) //merubah string ke uint
+	if err != nil {
+		fmt.Println("Nim harus berupa angka")
+		return dto.UpdateStudentRequest{}, err
+	}
+
+	// cari nim sebelum update
+	student, err := h.service.FindByNim(nimUint)
+	if err != nil {
+		return dto.UpdateStudentRequest{}, err
+	}
+
+	// tampilkan data sebelum di update
+	fmt.Println("NIM ditemukan:")
+	fmt.Printf("Nama: %s | NIM: %d | Email: %s | Major: %s\n", student.Name, student.NIM, student.Email, student.Major)
+
+	// input Name
+	fmt.Println("Masukkan data baru")
+	fmt.Print("Input New Name: ")
+	name, _ := reader.ReadString('\n') //membaca satu baris input
+	name = strings.TrimSpace(name)
+
+	// input email
+	fmt.Print("Input New Email: ")
+	email, _ := reader.ReadString('\n')
+	email = strings.TrimSpace(email)
+
+	// input jurusan
+	fmt.Print("Input New Major: ")
+	major, _ := reader.ReadString('\n')
+	major = strings.TrimSpace(major)
+
+	// buat dto
+	reqDto := dto.UpdateStudentRequest{
+		Name:  &name,
+		NIM:   uint(nimUint),
+		Email: &email,
+		Major: &major,
+	}
+
+	// panggil service
+	if err := h.service.Update(reqDto); err != nil {
+		fmt.Println("error:", err)
+		return dto.UpdateStudentRequest{}, err
+	}
+
+	return dto.UpdateStudentRequest{}, nil
+}

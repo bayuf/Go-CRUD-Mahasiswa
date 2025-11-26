@@ -2,14 +2,18 @@ package repository
 
 import (
 	"database/sql"
+	"fmt"
+	"strings"
 
 	"github.com/bayuf/Go-CRUD-Mahasiswa/db"
 	"github.com/bayuf/Go-CRUD-Mahasiswa/model"
 )
 
 type IStudentRepository interface {
-	Create(m model.Student) error
+	Create(model.Student) error
 	Read() ([]model.Student, error)
+	Update(model.Student) error
+	FindByNim(uint64) (model.Student, error)
 }
 
 type StudentRepository struct {
@@ -68,4 +72,72 @@ func (r StudentRepository) Read() ([]model.Student, error) {
 	}
 
 	return listAll, nil
+}
+
+func (r StudentRepository) Update(m model.Student) error {
+	query := "UPDATE student SET "
+	args := []interface{}{}
+	counter := 1
+
+	// membuat query berdasarkan apa yang mau diubah
+	if m.Name != "" {
+		query += fmt.Sprintf("name=$%d, ", counter) // name=$1
+		args = append(args, m.Name)                 // menambahkan ke slice args
+		counter++
+	}
+	if m.Email != "" {
+		query += fmt.Sprintf("email=$%d, ", counter) // email=$2 or $1
+		args = append(args, m.Email)
+		counter++
+	}
+	if m.Major != "" {
+		query += fmt.Sprintf("major=$%d, ", counter) // major=$3 or $2 or $1
+		args = append(args, m.Major)
+		counter++
+	}
+
+	// hapus koma di akhir query setelah di gabung
+	query = strings.TrimRight(query, ", ")
+
+	// WHERE berdasarkan NIM
+	query += fmt.Sprintf(" WHERE nim=$%d", counter)
+	args = append(args, m.NIM)
+
+	fmt.Println("QUERY:", query)
+	fmt.Println("ARGS:", args)
+	_, err := r.DB.Exec(query, args...)
+	return err
+}
+
+func (r StudentRepository) FindByNim(req uint64) (model.Student, error) {
+	query := "SELECT nim, name, email, major FROM student WHERE "
+	nimReq := req
+	query += fmt.Sprintf("nim=%d", nimReq)
+
+	rows, err := r.DB.Query(query)
+	if err != nil {
+		return model.Student{}, err
+	}
+
+	defer rows.Close()
+
+	var (
+		nim   uint64
+		name  string
+		email string
+		major string
+	)
+
+	for rows.Next() { // membaca baris satu per satu
+		if err := rows.Scan(&nim, &name, &email, &major); err != nil { // memindahkan data ke var
+			return model.Student{}, err
+		}
+	}
+	//convert int64 -> uint
+	return model.Student{
+		NIM:   uint(nim),
+		Name:  name,
+		Email: email,
+		Major: major,
+	}, nil
 }

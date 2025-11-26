@@ -6,3 +6,10 @@ type CreateStudentRequest struct {
 	Email string
 	Major string
 }
+
+type UpdateStudentRequest struct {
+	NIM   uint
+	Name  *string
+	Email *string
+	Major *string
+}

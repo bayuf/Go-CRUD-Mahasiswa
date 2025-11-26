@@ -55,3 +55,47 @@ func (s StudentService) Create(req dto.CreateStudentRequest) error {
 func (s StudentService) Read() ([]model.Student, error) {
 	return s.Repo.Read() // melakukan query
 }
+
+func (s StudentService) Update(req dto.UpdateStudentRequest) error {
+	// validasi isian kosong
+	if req.NIM == 0 {
+		return errors.New("error: nim invalid")
+	}
+
+	if req.Name == nil || req.Email == nil || req.Major == nil {
+		return errors.New("error: tidak ada data yang dirubah")
+	}
+
+	// konversi dto ke model
+	m := model.Student{
+		NIM:   req.NIM,
+		Name:  *req.Name,
+		Email: *req.Email,
+		Major: *req.Major,
+	}
+
+	// update ke db melalui repo
+	if err := s.Repo.Update(m); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s StudentService) FindByNim(req uint64) (model.Student, error) {
+	if req == 0 {
+		return model.Student{}, errors.New("error: nim invalid")
+	}
+
+	student, err := s.Repo.FindByNim(req)
+	if err != nil {
+		return model.Student{}, err
+	}
+
+	return model.Student{
+		NIM:   student.NIM,
+		Name:  student.Name,
+		Email: student.Email,
+		Major: student.Major,
+	}, nil
+}

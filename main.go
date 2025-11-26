@@ -40,6 +40,7 @@ func main() {
 			handler.Read()
 		case 3:
 			// Update
+			handler.Update()
 		case 4:
 			// Delete
 		case 5:
