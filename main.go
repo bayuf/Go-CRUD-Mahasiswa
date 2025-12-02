@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/bayuf/Go-CRUD-Mahasiswa/db"
-	"github.com/bayuf/Go-CRUD-Mahasiswa/dto"
 	"github.com/bayuf/Go-CRUD-Mahasiswa/handler"
 	"github.com/bayuf/Go-CRUD-Mahasiswa/repository"
 	"github.com/bayuf/Go-CRUD-Mahasiswa/services"
@@ -18,7 +17,6 @@ func main() {
 	repo := repository.NewStudentRepository()
 	svc := services.NewStudentService(repo)
 	handler := handler.NewStudentHandler(svc)
-	req := dto.CreateStudentRequest{}
 
 	for {
 		fmt.Println("===== MENU MAHASISWA =====")
@@ -34,7 +32,7 @@ func main() {
 		switch menu {
 		case 1:
 			// melakukan Create
-			handler.Create(req)
+			handler.Create()
 		case 2:
 			// menampilkan semua list mahasiswa
 			handler.Read()
@@ -43,7 +41,9 @@ func main() {
 			handler.Update()
 		case 4:
 			// Delete
+			handler.Delete()
 		case 5:
+			fmt.Println("terima kasih")
 			return
 		}
 	}

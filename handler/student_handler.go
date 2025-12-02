@@ -21,7 +21,7 @@ func NewStudentHandler(service services.StudentService) StudentHandler {
 	}
 }
 
-func (h StudentHandler) Create(req dto.CreateStudentRequest) {
+func (h StudentHandler) Create() {
 	reader := bufio.NewReader(os.Stdin)
 	reader.ReadString('\n')
 	// input Name
@@ -140,4 +140,43 @@ func (h StudentHandler) Update() (dto.UpdateStudentRequest, error) {
 	}
 
 	return dto.UpdateStudentRequest{}, nil
+}
+
+func (h StudentHandler) Delete() {
+	reader := bufio.NewReader(os.Stdin)
+	reader.ReadString('\n')
+
+	fmt.Print("Masukkan NIM Mahasiswa yang akan dihapus: ")
+	nim, _ := reader.ReadString('\n')
+	nim = strings.TrimSpace(nim)
+
+	uintNim, _ := strconv.ParseUint(nim, 10, 64)
+
+	student, err := h.service.FindByNim(uintNim)
+	if err != nil {
+		fmt.Println("error:", err)
+		return
+	}
+
+	fmt.Println("Mahasiswa ditemukan:\n", student)
+
+	for {
+		fmt.Println("hapus data mahasiswa tersebut? y/n")
+		var choice string
+		fmt.Scan(&choice)
+
+		if strings.TrimSpace(strings.ToLower(choice)) == "y" {
+			h.service.Delete(uintNim)
+
+			fmt.Println("data berhasil dihapus")
+			break
+		} else if strings.TrimSpace(strings.ToLower(choice)) == "n" {
+			fmt.Println("data gagal dihapus")
+			break
+		} else {
+			fmt.Println("invalid input (y/n)")
+		}
+
+	}
+
 }

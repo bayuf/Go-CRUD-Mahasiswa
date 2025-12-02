@@ -14,6 +14,7 @@ type IStudentRepository interface {
 	Read() ([]model.Student, error)
 	Update(model.Student) error
 	FindByNim(uint64) (model.Student, error)
+	Delete(uint64) error
 }
 
 type StudentRepository struct {
@@ -140,4 +141,19 @@ func (r StudentRepository) FindByNim(req uint64) (model.Student, error) {
 		Email: email,
 		Major: major,
 	}, nil
+}
+
+func (r StudentRepository) Delete(req uint64) error {
+	query := "DELETE FROM student WHERE "
+	nimReq := req
+	query += fmt.Sprintf("nim=%d", nimReq)
+
+	rows, err := r.DB.Query(query)
+	if err != nil {
+		return err
+	}
+
+	defer rows.Close()
+
+	return nil
 }

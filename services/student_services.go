@@ -99,3 +99,15 @@ func (s StudentService) FindByNim(req uint64) (model.Student, error) {
 		Major: student.Major,
 	}, nil
 }
+
+func (s StudentService) Delete(req uint64) error {
+	if req == 0 {
+		return errors.New("error: nim invalid")
+	}
+
+	if err := s.Repo.Delete(req); err != nil {
+		return err
+	}
+
+	return nil
+}
